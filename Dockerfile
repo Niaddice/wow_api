@@ -4,6 +4,10 @@ FROM golang:alpine AS builder
 # 设置工作目录
 WORKDIR /app
 
+# --- 核心修改：设置国内代理 ---
+# 使用 goproxy.cn 是目前国内最稳定的方案
+RUN go env -w GOPROXY=https://goproxy.cn,direct
+
 # 复制依赖文件并下载
 COPY go.mod go.sum ./
 RUN go mod download
