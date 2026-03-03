@@ -1,6 +1,9 @@
 package global
 
 import (
+	"os"
+	"strconv"
+
 	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
 )
@@ -29,13 +32,13 @@ var Config = struct {
 	// 统计天数
 	ChartDay int64
 }{
-	ListenHost: "127.0.0.1",
+	ListenHost: "0.0.0.0",
 	ListenPort: 8002,
-	DbHost:     "127.0.0.1",
-	DbPort:     3306,
-	DbUser:     "root",
-	DbPwd:      "test123",
-	DbName:     "wow_hong",
+	DbHost:     getEnv("DB_HOST", "127.0.0.1"),
+	DbPort:     getEnvInt32("DB_PORT", "3306"),
+	DbUser:     getEnv("DB_USER", "root"),
+	DbPwd:      getEnv("DB_PWD", "123456"),
+	DbName:     getEnv("DB_NAME", "wow_hong"),
 	IsSaveLog:  true,
 	LogPath:    "./logs/log.txt",
 	LogLevel:   logrus.DebugLevel,
@@ -58,4 +61,22 @@ func init() {
 			&logrus.JSONFormatter{},
 		))
 	}
+}
+
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
+}
+
+func getEnvInt32(key, defaultValue string) int32 {
+	if value := os.Getenv(key); value != "" {
+		return 3306
+	}
+	atoi, err := strconv.Atoi(getEnv("DB_PORT", "3306"))
+	if err != nil {
+		return 3306
+	}
+	return int32(atoi)
 }
